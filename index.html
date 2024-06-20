@@ -3,33 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Model Evaluation</title>
-    <link rel="stylesheet" href="../static/style.css">
+    <title>Data Analysis Upload</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        h1 {
+            color: #333;
+        }
+        form {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        input[type="file"] {
+            margin-bottom: 10px;
+        }
+        button {
+            background: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        h2 {
+            color: #555;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
 </head>
 <body>
-    <h1>Evaluasi Model DTR</h1>
-    <h2>Hasil Evaluasi</h2>
-    <ul>
-        <li>Accuracy: <span id="accuracy"></span></li>
-        <li>Precision: <span id="precision"></span></li>
-        <li>Recall: <span id="recall"></span></li>
-        <li>F1 Score: <span id="f1_score"></span></li>
-    </ul>
-    <h2>Upload Data Baru untuk Prediksi</h2>
-    <form id="uploadForm" enctype="multipart/form-data">
-        <label for="fileInput">Pilih file CSV:</label>
-        <input type="file" id="fileInput" name="fileInput" accept=".csv">
-        <button type="submit">Unggah dan Prediksi</button>
+    <h1>Upload your data file</h1>
+    <form id="upload-form" enctype="multipart/form-data">
+        <input type="file" name="file" id="file" required>
+        <button type="submit">Upload</button>
     </form>
-    <div>
-        <h2>Klasifikasi Top 50 Team</h2>
-        <canvas id="barChart" width="800" height="400"></canvas>
-    </div>
-    <div>
-        <h2>Distribusi Skor Team</h2>
-        <canvas id="pieChart" width="800" height="400"></canvas>
-    </div>
-    <script src="../static/script.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <h2>Analysis Result</h2>
+    <img id="result-image" src="" alt="Analysis Result" style="display: none;">
+    
+    <script>
+        document.getElementById('upload-form').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const formData = new FormData();
+            formData.append('file', document.getElementById('file').files[0]);
+
+            const response = await fetch('/upload', {
+                method: 'POST',
+                body: formData,
+            });
+
+            const result = await response.json();
+            if (result.image) {
+                document.getElementById('result-image').src = 'data:image/png;base64,' + result.image;
+                document.getElementById('result-image').style.display = 'block';
+            }
+        });
+    </script>
 </body>
 </html>
